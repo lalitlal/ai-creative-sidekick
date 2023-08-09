@@ -13,7 +13,7 @@ const FileUpload = () => {
 
   const handleFileSelect = (e) => {
     const files = Array.from(e.target.files);
-    csvContext.setSelectedFiles([...csvContext.selectedFiles, ...files]);
+    csvContext.setSelectedFiles(files);
   };
 
   const handleDragOver = (e) => {
@@ -26,8 +26,7 @@ const FileUpload = () => {
     csvContext.setSelectedFiles([...csvContext.selectedFiles, ...files]);
   };
 
-  const handleUpload = () => {
-    setIsLoading(true);
+  const handleUpload = async () => {
     if (csvContext.selectedFiles.length === 0) {
       setErrorMessage("Please select at least one file.");
       setIsLoading(false);
@@ -44,22 +43,21 @@ const FileUpload = () => {
       const lines = text.split("\n");
       const _data = lines.map((line) => line.split(","));
       csvContext.setCSVData(_data);
-    };
+      csvContext.setFileName(file.name);
 
-    processFile();
+      const fileNames = await fetch("/api/drive", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ fileData: text, fileName: file.name }),
+      });
+    };
+    setIsLoading(true);
+    await processFile();
     setIsLoading(false);
     // csvContext.setSelectedFiles([]);
     setErrorMessage("");
-  };
-
-  const displayAllFiles = () => {
-    return (
-      <ul className="list-disc list-inside justify-start text-left">
-        {csvContext.selectedFiles.map((file, index) => (
-          <li key={index}>{file.name}</li>
-        ))}
-      </ul>
-    );
   };
 
   return (
@@ -102,7 +100,7 @@ const FileUpload = () => {
           onClick={handleUpload}
           className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 cursor-pointer mx-2"
         >
-          {isLoading ? loadingCircle : <div>Parse Files</div>}
+          {isLoading ? <div>{loadingCircle}</div> : <div>Parse Files</div>}
         </div>
         <div className="flex-col">
           {errorMessage && <p className="text-red-500 mt-4">{errorMessage}</p>}

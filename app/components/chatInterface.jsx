@@ -2,9 +2,13 @@
 import React, { useContext, useState } from "react";
 import { ChatContext } from "./context/ChatContext";
 import { loadingCircle } from "../constants";
+import DeployLLM from "./DeployLLM";
+import { CSVContext } from "./context/CSVContext";
 
 const TextBoxWithSubmit = () => {
+  const csvContext = useContext(CSVContext);
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const chatIcon = (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -24,40 +28,93 @@ const TextBoxWithSubmit = () => {
 
   const chatContext = useContext(ChatContext);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
+    chatContext.setOutputText("");
+    chatContext.setIsAskingLLM(true);
+
+    console.log(
+      csvContext.fileName,
+      chatContext.inputText,
+      csvContext.selectedHeaders
+    );
+    const fetchData = async () => {
+      try {
+        const response = await fetch("/api/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            filename: csvContext.fileName,
+            prompt: chatContext.inputText,
+            columns: csvContext.selectedHeaders,
+          }),
+        });
+
+        if (!response.ok) {
+          console.log("Something failed when hitting cloud run!");
+          throw new Error(`Request failed with status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("DATA!!!", data);
+        chatContext.setOutputText(data.message);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
     e.preventDefault();
     // Handle submit logic here, e.g., send inputText to the server
     setIsLoading(true);
-    const processRequest = () => {
+
+    const processRequest = async () => {
       // Assuming you have a handle to your llangchain object
-      chatContext.setOutputText(
-        "According to my results, you have been duped. This isn't a real model silly goose."
-      );
-      setTimeout(() => {
-        console.log("YEHAEE");
-      }, 2000);
+      if (
+        csvContext.selectedFiles.length > 0 &&
+        csvContext.csvData.length > 0
+      ) {
+        await fetchData();
+        setErrorMessage("");
+      } else {
+        setErrorMessage("You need to upload a CSV first.");
+        setTimeout(() => {
+          setErrorMessage("");
+        }, 2000);
+        chatContext.setOutputText("");
+      }
     };
-    processRequest();
+
+    setIsLoading(true);
+    await processRequest();
     setIsLoading(false);
+    chatContext.setIsAskingLLM(false);
   };
 
   return (
-    <div className="w-full flex justify-center py-5">
-      <div className="flex w-3/4 justify-center items-center">
-        <input
-          type="text"
-          value={chatContext.inputText}
-          onChange={(e) => chatContext.setInputText(e.target.value)}
-          className="border px-2 py-4 mr-2 flex-grow text-black"
-          placeholder="Enter Prompt"
-        />
-        <button
-          onClick={handleSubmit}
-          className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-4 px-4"
-        >
-          {isLoading ? loadingCircle : chatIcon}
-        </button>
+    <div>
+      <div className="w-full flex justify-center py-5">
+        <div className="flex w-3/4 justify-center items-center">
+          <input
+            type="text"
+            value={chatContext.inputText}
+            onChange={(e) => chatContext.setInputText(e.target.value)}
+            className="border px-2 py-4 mr-2 flex-grow text-black"
+            placeholder="Enter Prompt"
+          />
+          <button
+            onClick={handleSubmit}
+            className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-4 px-4"
+          >
+            {isLoading ? loadingCircle : chatIcon}
+          </button>
+        </div>
       </div>
+      {errorMessage && (
+        <div className="flex flex-col text-center text-red-500 my-2">
+          {errorMessage}
+        </div>
+      )}
     </div>
   );
 };

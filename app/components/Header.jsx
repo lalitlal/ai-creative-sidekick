@@ -4,9 +4,9 @@ import { logo } from "../constants";
 const Header = () => {
   const animationClass = "hover:text-yellow-200 hover:cursor-pointer";
   return (
-    <header class="text-gray-600 body-font">
+    <header class="text-gray-200 body-font">
       <div class="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
-        <a class="flex title-font font-medium items-center text-gray-900 mb-4 md:mb-0 hover:text-yellow-200">
+        <a class="flex title-font font-medium items-center text-gray-300 mb-4 md:mb-0 hover:text-yellow-200">
           {logo}
           <span class="ml-3 text-xl ">Creative Sidekick</span>
         </a>
@@ -16,7 +16,7 @@ const Header = () => {
           <a class={`mr-5 ${animationClass}`}>Ideation (Coming Soon!)</a>
           <a class={`mr-5 ${animationClass}`}>Pricing</a>
         </nav>
-        <button class="inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0 hover:text-black hover:bg-yellow-300">
+        <button class="inline-flex items-center bg-gray-300 text-black border-0 py-1 px-3 focus:outline-none rounded text-base mt-4 md:mt-0 hover:text-black hover:bg-yellow-300">
           Contact Us
           <svg
             fill="none"
