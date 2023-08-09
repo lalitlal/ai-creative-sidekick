@@ -18,7 +18,7 @@ export default function Home() {
       <div className="my-48">
         <Hero></Hero>
         <FileUpload></FileUpload>
-        {/* <CSVPreviewer></CSVPreviewer> */}
+        <CSVPreviewer></CSVPreviewer>
         <CommonPrompts></CommonPrompts>
         <ChatOutput></ChatOutput>
       </div>
