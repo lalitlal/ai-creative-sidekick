@@ -51,6 +51,8 @@ const TextBoxWithSubmit = () => {
           }),
         });
         console.log("REPSONSE!!!", response);
+        const tester = await response.json();
+        console.log("REPONSE JSON", tester);
         if (!response.ok) {
           console.log("Something failed when hitting cloud run!");
           throw new Error(`Request failed with status: ${response.status}`);
