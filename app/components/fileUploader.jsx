@@ -32,26 +32,34 @@ const FileUpload = () => {
       setIsLoading(false);
       return;
     }
-
     // Handle file upload logic here
     // You can use libraries like Axios, Fetch, etc. to send files to the server
     const processFile = async () => {
+      csvContext.setProcessingData(true);
       const file = csvContext.selectedFiles[0];
       const fileUrl = URL.createObjectURL(file);
       const response = await fetch(fileUrl);
       const text = await response.text();
       const lines = text.split("\n");
       const _data = lines.map((line) => line.split(","));
-      csvContext.setCSVData(_data);
-      csvContext.setFileName(file.name);
 
-      const fileNames = await fetch("/api/drive", {
+      const response_upload = await fetch("/api/drive", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ fileData: text, fileName: file.name }),
       });
+
+      if (!response_upload.ok) {
+        console.log("Something failed when hitting GCStorage!");
+        throw new Error(
+          `Request failed with status: ${response_upload.status}, ${response_upload.message}`
+        );
+      }
+      csvContext.setCSVData(_data);
+      csvContext.setFileName(file.name);
+      csvContext.setProcessingData(false);
     };
     setIsLoading(true);
     await processFile();

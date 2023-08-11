@@ -8,6 +8,7 @@ export function CSVContextProvider({ children }) {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [selectedHeaders, setSelectedHeaders] = useState([]);
   const [fileName, setFileName] = useState("");
+  const [processingData, setProcessingData] = useState(false);
 
   return (
     <CSVContext.Provider
@@ -20,6 +21,8 @@ export function CSVContextProvider({ children }) {
         setSelectedHeaders,
         fileName,
         setFileName,
+        processingData,
+        setProcessingData,
       }}
     >
       {children}
