@@ -12,7 +12,7 @@ const CSVPreviewer = () => {
     csvContext.selectedFiles.length > 0 &&
     csvContext.csvData.length > 0 && (
       <>
-        <div className="w-full flex justify-center text-center py-4">
+        {/* <div className="w-full flex justify-center text-center py-4">
           <div className="w-3/4 h-48 overflow-scroll border border-white">
             <table>
               <thead className="border border-b text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -44,7 +44,7 @@ const CSVPreviewer = () => {
               </tbody>
             </table>
           </div>
-        </div>
+        </div> */}
         {headers ? (
           <div className="flex-col flex w-full text-center justify-center mt-3">
             Select which headers you want the sidekick to focus on.

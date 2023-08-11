@@ -50,7 +50,7 @@ const TextBoxWithSubmit = () => {
             columns: csvContext.selectedHeaders,
           }),
         });
-
+        console.log("REPSONSE!!!", response);
         if (!response.ok) {
           console.log("Something failed when hitting cloud run!");
           throw new Error(`Request failed with status: ${response.status}`);

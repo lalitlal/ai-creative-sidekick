@@ -24,7 +24,6 @@ export async function POST(request) {
     method: "POST",
     data: data,
   });
-  console.log("CREDSSS");
 
   if (response.status !== 200) {
     throw new Error(`Request failed with status: ${response.status}`);
