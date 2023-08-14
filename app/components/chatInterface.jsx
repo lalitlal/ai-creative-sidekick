@@ -32,13 +32,13 @@ const TextBoxWithSubmit = () => {
     chatContext.setOutputText("");
     chatContext.setIsAskingLLM(true);
 
-    console.log(
-      csvContext.fileName,
-      chatContext.inputText,
-      csvContext.selectedHeaders
-    );
     const fetchData = async () => {
       try {
+        // console.log(
+        //   csvContext.selectedReviewHeaders,
+        //   csvContext.selectedTitleHeaders,
+        //   csvContext.concatenateReviewAndTitleHeaders
+        // );
         const response = await fetch("/api/chat", {
           method: "POST",
           headers: {
@@ -47,19 +47,17 @@ const TextBoxWithSubmit = () => {
           body: JSON.stringify({
             filename: csvContext.fileName,
             prompt: chatContext.inputText,
-            columns: csvContext.selectedHeaders,
+            reviewColumns: csvContext.selectedReviewHeaders,
+            titleColumns: csvContext.selectedTitleHeaders,
+            concatenate: csvContext.concatenateReviewAndTitleHeaders,
           }),
         });
-        console.log("REPSONSE!!!", response);
-        const tester = await response.json();
-        console.log("REPONSE JSON", tester);
+
         if (!response.ok) {
           console.log("Something failed when hitting cloud run!");
           throw new Error(`Request failed with status: ${response.status}`);
         }
-
         const data = await response.json();
-        console.log("DATA!!!", data);
         chatContext.setOutputText(data.message);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -108,7 +106,7 @@ const TextBoxWithSubmit = () => {
             onClick={handleSubmit}
             className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-4 px-4"
           >
-            {isLoading ? loadingCircle : chatIcon}
+            {chatContext.isAskingLLM ? loadingCircle : chatIcon}
           </button>
         </div>
       </div>

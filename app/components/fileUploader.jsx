@@ -8,7 +8,6 @@ import FileDisplayer from "./FileDisplayer";
 const FileUpload = () => {
   //   const [selectedFiles, setSelectedFiles] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const csvContext = useContext(CSVContext);
 
   const handleFileSelect = (e) => {
@@ -29,13 +28,15 @@ const FileUpload = () => {
   const handleUpload = async () => {
     if (csvContext.selectedFiles.length === 0) {
       setErrorMessage("Please select at least one file.");
-      setIsLoading(false);
+      csvContext.setProcessingData(false);
+      setTimeout(() => {
+        setErrorMessage("");
+      }, 2000);
       return;
     }
     // Handle file upload logic here
     // You can use libraries like Axios, Fetch, etc. to send files to the server
     const processFile = async () => {
-      csvContext.setProcessingData(true);
       const file = csvContext.selectedFiles[0];
       const fileUrl = URL.createObjectURL(file);
       const response = await fetch(fileUrl);
@@ -59,12 +60,16 @@ const FileUpload = () => {
       }
       csvContext.setCSVData(_data);
       csvContext.setFileName(file.name);
-      csvContext.setProcessingData(false);
     };
-    setIsLoading(true);
+
+    csvContext.setProcessingData(true);
+    csvContext.setSelectedReviewHeaders([]);
+    csvContext.setSelectedTitleHeaders([]);
+    csvContext.setFileName("");
+    csvContext.setCSVData([]);
+    csvContext.setConcatenateReviewAndTitleHeaders(false);
     await processFile();
-    setIsLoading(false);
-    // csvContext.setSelectedFiles([]);
+    csvContext.setProcessingData(false);
     setErrorMessage("");
   };
 
@@ -108,7 +113,11 @@ const FileUpload = () => {
           onClick={handleUpload}
           className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 cursor-pointer mx-2"
         >
-          {isLoading ? <div>{loadingCircle}</div> : <div>Parse Files</div>}
+          {csvContext.procesingData ? (
+            <div>{loadingCircle}</div>
+          ) : (
+            <div>Parse Files</div>
+          )}
         </div>
         <div className="flex-col">
           {errorMessage && <p className="text-red-500 mt-4">{errorMessage}</p>}

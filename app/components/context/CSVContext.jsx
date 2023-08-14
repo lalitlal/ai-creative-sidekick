@@ -6,9 +6,14 @@ export const CSVContext = createContext();
 export function CSVContextProvider({ children }) {
   const [csvData, setCSVData] = useState([]);
   const [selectedFiles, setSelectedFiles] = useState([]);
-  const [selectedHeaders, setSelectedHeaders] = useState([]);
+  const [selectedReviewHeaders, setSelectedReviewHeaders] = useState([]);
   const [fileName, setFileName] = useState("");
   const [processingData, setProcessingData] = useState(false);
+  const [selectedTitleHeaders, setSelectedTitleHeaders] = useState([]);
+  const [
+    concatenateReviewAndTitleHeaders,
+    setConcatenateReviewAndTitleHeaders,
+  ] = useState(false);
 
   return (
     <CSVContext.Provider
@@ -17,12 +22,16 @@ export function CSVContextProvider({ children }) {
         setCSVData,
         selectedFiles,
         setSelectedFiles,
-        selectedHeaders,
-        setSelectedHeaders,
+        selectedReviewHeaders,
+        setSelectedReviewHeaders,
+        selectedTitleHeaders,
+        setSelectedTitleHeaders,
         fileName,
         setFileName,
         processingData,
         setProcessingData,
+        concatenateReviewAndTitleHeaders,
+        setConcatenateReviewAndTitleHeaders,
       }}
     >
       {children}

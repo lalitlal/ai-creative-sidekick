@@ -3,7 +3,6 @@ import { trashIcon } from "../constants";
 import { CSVContext } from "./context/CSVContext";
 
 const FileDisplayer = ({ selectedFiles, setSelectedFiles }) => {
-  console.log("YEHAWWWW");
   const csvContext = useContext(CSVContext);
   const handleDeleteFile = (index) => {
     const newArr = [...selectedFiles];
@@ -11,6 +10,10 @@ const FileDisplayer = ({ selectedFiles, setSelectedFiles }) => {
     setSelectedFiles(newArr);
     if (newArr.length === 0) {
       csvContext.setCSVData([]);
+      csvContext.setSelectedReviewHeaders([]);
+      csvContext.setSelectedTitleHeaders([]);
+      csvContext.setFileName("");
+      csvContext.setSelectedFiles([]);
     }
   };
   return (
