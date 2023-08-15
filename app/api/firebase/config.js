@@ -9,8 +9,10 @@ const decodedBuffer = Buffer.from(
 );
 const decodedJSON = JSON.parse(decodedBuffer.toString());
 console.log(getApps());
-export const firebase_app =
-  getApps().length === 0
-    ? initializeApp({ credential: credential.cert(decodedJSON) })
-    : getApps()[0];
+export const firebase_app = initializeApp({
+  credential: credential.cert(decodedJSON),
+});
+//   getApps().length === 0
+//     ? initializeApp({ credential: credential.cert(decodedJSON) })
+//     : getApps()[0];
 export const db = getFirestore(firebase_app);
