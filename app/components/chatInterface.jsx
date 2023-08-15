@@ -7,7 +7,6 @@ import { CSVContext } from "./context/CSVContext";
 
 const TextBoxWithSubmit = () => {
   const csvContext = useContext(CSVContext);
-  const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const chatIcon = (
     <svg
@@ -28,10 +27,35 @@ const TextBoxWithSubmit = () => {
 
   const chatContext = useContext(ChatContext);
 
-  const handleSubmit = async (e) => {
-    chatContext.setOutputText("");
-    chatContext.setIsAskingLLM(true);
+  const getFireStoreByUUID = async (uuid) => {
+    console.log("HITTING FIREBASE...");
+    const query_param = new URLSearchParams({ uuid: uuid });
 
+    const response = await fetch("/api/firebase?" + query_param, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      console.log("Something failed when hitting firebase!");
+      throw new Error(`Request failed with status: ${response.status}`);
+    }
+    const data = await response.json();
+    console.log("WE HAVE FIREBASE DATA!!", data);
+    chatContext.setOutputText(data.message);
+  };
+
+  const handleSubmit = async (e) => {
+    const waitOnFirebase = (callback, seconds) =>
+      new Promise((resolve) => {
+        setTimeout(() => {
+          console.log("trying another method...");
+          callback();
+          resolve();
+        }, seconds);
+      });
     const fetchData = async () => {
       try {
         // console.log(
@@ -58,7 +82,14 @@ const TextBoxWithSubmit = () => {
           throw new Error(`Request failed with status: ${response.status}`);
         }
         const data = await response.json();
-        chatContext.setOutputText(data.message);
+        // setTimeout(() => {
+        //   console.log("WAITING FOR FIREBASE...");
+        //   getFireStoreByUUID(data.message);
+        // }, 20000);
+        await waitOnFirebase(() => {
+          console.log("WAITING FOR FIREBASE...");
+          getFireStoreByUUID(data.message);
+        }, 20000);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -66,7 +97,6 @@ const TextBoxWithSubmit = () => {
 
     e.preventDefault();
     // Handle submit logic here, e.g., send inputText to the server
-    setIsLoading(true);
 
     const processRequest = async () => {
       // Assuming you have a handle to your llangchain object
@@ -84,10 +114,9 @@ const TextBoxWithSubmit = () => {
         chatContext.setOutputText("");
       }
     };
-
-    setIsLoading(true);
+    chatContext.setOutputText("");
+    chatContext.setIsAskingLLM(true);
     await processRequest();
-    setIsLoading(false);
     chatContext.setIsAskingLLM(false);
   };
 
