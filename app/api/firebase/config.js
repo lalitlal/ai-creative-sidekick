@@ -4,7 +4,7 @@ import { getApps, initializeApp } from "firebase-admin/app";
 import { credential } from "firebase-admin";
 import { getFirestore } from "firebase-admin/firestore";
 const decodedBuffer = Buffer.from(
-  process.env.NEXT_PUBLIC_BASE_64_CREDS,
+  process.env.NEXT_PUBLIC_GOOGLE_FIREBASE_BASE_64_CREDS,
   "base64"
 );
 const decodedJSON = JSON.parse(decodedBuffer.toString());
