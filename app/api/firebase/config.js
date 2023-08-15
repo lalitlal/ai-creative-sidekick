@@ -8,7 +8,6 @@ const decodedBuffer = Buffer.from(
   "base64"
 );
 const decodedJSON = JSON.parse(decodedBuffer.toString());
-console.log(getApps());
 export const firebase_app = initializeApp({
   credential: credential.cert(decodedJSON),
 });
