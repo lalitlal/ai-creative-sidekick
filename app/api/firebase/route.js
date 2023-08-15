@@ -24,8 +24,6 @@ export async function GET(request) {
     );
   }
   const data = doc.data();
-  //   console.log("Document data:", data);
-
   return NextResponse.json(
     {
       message: data.response,

@@ -28,7 +28,6 @@ const TextBoxWithSubmit = () => {
   const chatContext = useContext(ChatContext);
 
   const getFireStoreByUUID = async (uuid) => {
-    console.log("HITTING FIREBASE...");
     const query_param = new URLSearchParams({ uuid: uuid });
 
     const response = await fetch("/api/firebase?" + query_param, {
@@ -43,7 +42,6 @@ const TextBoxWithSubmit = () => {
       throw new Error(`Request failed with status: ${response.status}`);
     }
     const data = await response.json();
-    console.log("WE HAVE FIREBASE DATA!!", data);
     chatContext.setOutputText(data.message);
   };
 
@@ -51,18 +49,12 @@ const TextBoxWithSubmit = () => {
     const waitOnFirebase = (callback, seconds) =>
       new Promise((resolve) => {
         setTimeout(() => {
-          console.log("trying another method...");
           callback();
           resolve();
         }, seconds);
       });
     const fetchData = async () => {
       try {
-        // console.log(
-        //   csvContext.selectedReviewHeaders,
-        //   csvContext.selectedTitleHeaders,
-        //   csvContext.concatenateReviewAndTitleHeaders
-        // );
         const response = await fetch("/api/chat", {
           method: "POST",
           headers: {
@@ -82,12 +74,7 @@ const TextBoxWithSubmit = () => {
           throw new Error(`Request failed with status: ${response.status}`);
         }
         const data = await response.json();
-        // setTimeout(() => {
-        //   console.log("WAITING FOR FIREBASE...");
-        //   getFireStoreByUUID(data.message);
-        // }, 20000);
         await waitOnFirebase(() => {
-          console.log("WAITING FOR FIREBASE...");
           getFireStoreByUUID(data.message);
         }, 20000);
       } catch (error) {
