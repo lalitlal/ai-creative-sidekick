@@ -76,7 +76,7 @@ const TextBoxWithSubmit = () => {
         const data = await response.json();
         await waitOnFirebase(() => {
           getFireStoreByUUID(data.message);
-        }, 20000);
+        }, 25000);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
