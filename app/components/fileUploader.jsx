@@ -4,6 +4,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { CSVContext } from "./context/CSVContext";
 import { loadingCircle } from "../constants";
 import FileDisplayer from "./FileDisplayer";
+import { parse } from "papaparse";
 
 const FileUpload = () => {
   //   const [selectedFiles, setSelectedFiles] = useState([]);
@@ -25,6 +26,16 @@ const FileUpload = () => {
     csvContext.setSelectedFiles([...csvContext.selectedFiles, ...files]);
   };
 
+  const papaParseCallback = (data, filename) => {
+    if (data.length > 1) {
+      if (data[0][0] === "") {
+        data.shift();
+      }
+      csvContext.setCSVData(data);
+      csvContext.setFileName(filename);
+    }
+  };
+
   const handleUpload = async () => {
     if (csvContext.selectedFiles.length === 0) {
       setErrorMessage("Please select at least one file.");
@@ -41,8 +52,14 @@ const FileUpload = () => {
       const fileUrl = URL.createObjectURL(file);
       const response = await fetch(fileUrl);
       const text = await response.text();
-      const lines = text.split("\n");
-      const _data = lines.map((line) => line.split(","));
+      // const lines = text.split("\n");
+      // const _data = lines.map((line) => line.split(","));
+      const csvParse = parse(text, {
+        worker: true,
+        complete: function (results) {
+          papaParseCallback(results.data, file.name);
+        },
+      });
 
       const response_upload = await fetch("/api/drive", {
         method: "POST",
@@ -58,8 +75,8 @@ const FileUpload = () => {
           `Request failed with status: ${response_upload.status}, ${response_upload.message}`
         );
       }
-      csvContext.setCSVData(_data);
-      csvContext.setFileName(file.name);
+      // csvContext.setCSVData(_data);
+      // csvContext.setFileName(file.name);
     };
 
     csvContext.setProcessingData(true);

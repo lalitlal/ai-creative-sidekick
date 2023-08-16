@@ -28,7 +28,7 @@ const CSVPreviewer = () => {
           </div>
         </div>
       )}
-      {headers ? (
+      {headers && !csvContext.processingData ? (
         <div className="flex-col flex w-full text-center justify-center mt-3">
           <div className="sm:text-2xl text-xl font-medium title-font text-gray-300">
             Select which column(s) you want to combine for the reviews.
@@ -48,7 +48,7 @@ const CSVPreviewer = () => {
         ""
       )}
 
-      {headers ? (
+      {headers && !csvContext.processingData ? (
         <div className="flex-col flex w-full text-center justify-center mt-3">
           <div className="sm:text-2xl text-xl font-medium title-font text-gray-300">
             Select which column(s) you want to combine for the title.
@@ -77,7 +77,7 @@ const CSVPreviewer = () => {
         ""
       )}
 
-      {headers ? (
+      {headers && !csvContext.processingData ? (
         <div className="flex-col flex w-full text-center justify-center mt-3">
           <div className="w-full flex justify-center text-center sm:text-2xl text-xl font-medium title-font text-gray-300">
             <input
