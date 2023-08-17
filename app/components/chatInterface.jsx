@@ -27,32 +27,7 @@ const TextBoxWithSubmit = () => {
 
   const chatContext = useContext(ChatContext);
 
-  const getFireStoreByUUID = async (uuid) => {
-    const query_param = new URLSearchParams({ uuid: uuid });
-
-    const response = await fetch("/api/firebase?" + query_param, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (!response.ok) {
-      console.log("Something failed when hitting firebase!");
-      throw new Error(`Request failed with status: ${response.status}`);
-    }
-    const data = await response.json();
-    chatContext.setOutputText(data.message);
-  };
-
   const handleSubmit = async (e) => {
-    const waitOnFirebase = (callback, seconds) =>
-      new Promise((resolve) => {
-        setTimeout(() => {
-          callback();
-          resolve();
-        }, seconds);
-      });
     const fetchData = async () => {
       try {
         const response = await fetch("/api/chat", {
@@ -74,9 +49,7 @@ const TextBoxWithSubmit = () => {
           throw new Error(`Request failed with status: ${response.status}`);
         }
         const data = await response.json();
-        await waitOnFirebase(() => {
-          getFireStoreByUUID(data.message);
-        }, 35000);
+        chatContext.setChatId(data.message);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -89,12 +62,13 @@ const TextBoxWithSubmit = () => {
       // Assuming you have a handle to your llangchain object
       if (
         csvContext.selectedFiles.length > 0 &&
-        csvContext.csvData.length > 0
+        csvContext.csvData.length > 0 &&
+        chatContext.inputText !== ""
       ) {
         await fetchData();
         setErrorMessage("");
       } else {
-        setErrorMessage("You need to upload a CSV first.");
+        setErrorMessage("You need to upload a CSV first and have a prompt.");
         setTimeout(() => {
           setErrorMessage("");
         }, 2000);
@@ -102,6 +76,7 @@ const TextBoxWithSubmit = () => {
       }
     };
     chatContext.setOutputText("");
+    chatContext.setChatId("");
     chatContext.setIsAskingLLM(true);
     await processRequest();
     chatContext.setIsAskingLLM(false);

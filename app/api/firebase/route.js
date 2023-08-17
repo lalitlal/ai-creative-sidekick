@@ -1,7 +1,6 @@
 import { GoogleAuth } from "google-auth-library";
 import { NextResponse } from "next/server";
 import { db } from "./config";
-// import { db } from "./config";
 
 // AUTH :https://stackoverflow.com/questions/74299271/linking-google-credentials-to-vercel
 // https://firebase.google.com/docs/firestore/query-data/get-data#node.js

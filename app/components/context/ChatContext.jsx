@@ -7,6 +7,7 @@ export function ChatContextProvider({ children }) {
   const [inputText, setInputText] = useState("");
   const [outputText, setOutputText] = useState("");
   const [isAskingLLM, setIsAskingLLM] = useState(false);
+  const [chatId, setChatId] = useState(undefined);
 
   return (
     <ChatContext.Provider
@@ -17,6 +18,8 @@ export function ChatContextProvider({ children }) {
         setOutputText,
         isAskingLLM,
         setIsAskingLLM,
+        chatId,
+        setChatId,
       }}
     >
       {children}
